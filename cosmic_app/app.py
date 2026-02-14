@@ -5,6 +5,9 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
+os.makedirs("uploads", exist_ok=True)
+os.makedirs("outputs", exist_ok=True)
+
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'uploads'
