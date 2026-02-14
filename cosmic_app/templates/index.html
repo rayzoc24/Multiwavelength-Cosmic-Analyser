@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="processing-overlay" id="processingOverlay" aria-hidden="true">
+        <div class="overlay-spinner"></div>
+    </div>
+    <div class="image-modal" id="imageModal" aria-hidden="true">
+        <div class="modal-content">
+            <button class="modal-close" type="button" onclick="closeImageModal()" aria-label="Close modal">✕</button>
+            <div class="modal-toolbar">
+                <button class="btn modal-btn" type="button" onclick="zoomImage(1.2)">🔍 Zoom In</button>
+                <button class="btn modal-btn" type="button" onclick="zoomImage(0.8)">🔍 Zoom Out</button>
+                <button class="btn modal-btn" type="button" onclick="resetZoom()">↺ Reset</button>
+                <span class="hint" style="margin-left: auto;">💡 Drag to pan when zoomed</span>
+            </div>
+            <div class="modal-image-wrap">
+                <img id="modalImage" alt="Zoomed view">
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <header class="page-header">
+            <div class="title-block">
+                <h1>Multiwavelength Cosmic Analyzer</h1>
+                <p class="subtitle">Interactive Spectral Analysis Tool</p>
+            </div>
+        </header>
+
+        <section class="card fade-in">
+            <div class="section-header">
+                <h2>📈 Wien's Law Analysis</h2>
+                <div class="inline-controls">
+                    <label for="temperatureInput">Temperature (Kelvin): <span id="temperatureValue">5000 K</span></label>
+                    <input type="range" id="temperatureInput" min="1000" max="10000" value="5000" step="100">
+                    <button class="btn" onclick="generateGraph()">Generate Graph</button>
+                </div>
+            </div>
+            <div class="inline-controls">
+                <button class="btn toggle-btn active" id="wienToggle" onclick="setGraphMode('wien')">Wien's Law</button>
+                <button class="btn toggle-btn" id="intensityToggle" onclick="setGraphMode('intensity')">Intensity Curve</button>
+            </div>
+            <div class="graph-wrap">
+                <canvas id="graphCanvas"></canvas>
+            </div>
+        </section>
+
+        <section class="card fade-in">
+            <div class="section-header">
+                <h2>⚙ Image Processing</h2>
+                <div class="inline-controls">
+                    <label for="mode">Wavelength Mode</label>
+                    <select id="mode">
+                        <option value="optical">Optical</option>
+                        <option value="infrared">Infrared</option>
+                        <option value="xray">X-ray</option>
+                    </select>
+                    <label for="clusters">Number of Clusters (K): <span id="clusterValue">3</span></label>
+                    <input type="range" id="clusters" value="3" min="3" max="4" step="1">
+                    <div style="width: 100%; margin-top: 8px;">
+                        <label class="file-upload-label" for="imageInput">
+                            <span class="file-upload-icon">📁</span>
+                            <span class="file-upload-text" id="fileUploadText">Choose Image File</span>
+                        </label>
+                        <input type="file" id="imageInput" accept="image/*" onchange="previewUploadedImage()" style="display: none;">
+                    </div>
+                    <span class="hint">💡 Recommended clusters: <span id="suggestedK">3-4</span></span>
+                    <button class="btn" onclick="processImage()">🚀 Process Image</button>
+                    <div class="loading-indicator" aria-hidden="true">
+                        <span class="spinner"></span>
+                        <span class="loading-text">Processing</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card fade-in">
+            <div class="section-header">
+                <h2>🖼 Results</h2>
+            </div>
+            <div class="results-grid">
+                <div class="image-panel">
+                    <div class="image-placeholder">
+                        <img id="originalPreview" alt="Original image" onclick="openImageModal(this)">
+                    </div>
+                    <div class="image-label">Original</div>
+                </div>
+                <div class="image-panel">
+                    <div class="image-placeholder">
+                        <img id="processedImg" alt="Processed image" onclick="openImageModal(this)">
+                    </div>
+                    <div class="image-label">Processed</div>
+                </div>
+                <div class="image-panel">
+                    <div class="image-placeholder">
+                        <img id="segmentedImg" alt="Segmented image" onclick="openImageModal(this)">
+                    </div>
+                    <div class="image-label">Segmented</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card fade-in analysis-panel" id="analysisPanel" style="display: none;">
+            <div class="section-header">
+                <h2>📊 Integration Analysis</h2>
+            </div>
+            <div class="analysis-content">
+                <div class="analysis-item">
+                    <div class="analysis-icon">💡</div>
+                    <div class="analysis-text">
+                        <strong>Bright regions</strong> → High energy zones
+                    </div>
+                </div>
+                <div class="analysis-item">
+                    <div class="analysis-icon">🌑</div>
+                    <div class="analysis-text">
+                        <strong>Dark regions</strong> → Low intensity
+                    </div>
+                </div>
+            </div>
+            <div class="cluster-meanings" id="clusterMeanings">
+                <h3 class="cluster-heading">🔬 Cluster Interpretation</h3>
+                <div id="clusterList" class="cluster-list">
+                    <!-- Cluster interpretations will be added dynamically -->
+                </div>
+            </div>
+            <div class="color-scale-section">
+                <h3 class="cluster-heading">🌈 Intensity Color Scale</h3>
+                <div class="color-scale-container">
+                    <div class="color-scale-bar"></div>
+                    <div class="color-scale-labels">
+                        <span class="scale-label">Low Intensity</span>
+                        <span class="scale-label">High Intensity</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
