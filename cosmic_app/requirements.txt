@@ -1,6 +1,4 @@
- flask
- opencv-python
- numpy
- scikit-learn
- pillow
-matplotlib
+flask
+opencv-python
+numpy
+scikit-learn
