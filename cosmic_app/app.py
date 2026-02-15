@@ -2,16 +2,20 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
 import cv2
 import numpy as np
+import time
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 os.makedirs("uploads", exist_ok=True)
-os.makedirs("outputs", exist_ok=True)
+# Outputs will now be in static/outputs
+OUTPUT_FOLDER = os.path.join('static', 'outputs')
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'uploads'
-OUTPUT_FOLDER = 'outputs'
+# Redundant definition removed or updated to match above
+OUTPUT_FOLDER = os.path.join('static', 'outputs')
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -209,22 +213,27 @@ def process_image():
     seg_norm = (segmented / segmented.max() * 255).astype(np.uint8)
     segmented_color = cv2.applyColorMap(seg_norm, cv2.COLORMAP_JET)
 
-    processed_path = os.path.join(OUTPUT_FOLDER, 'processed.png')
-    segmented_path = os.path.join(OUTPUT_FOLDER, 'segmented.png')
+    filename_suffix = str(int(time.time()))
+    processed_filename = f"processed_{filename_suffix}.png"
+    segmented_filename = f"segmented_{filename_suffix}.png"
+
+    processed_path = os.path.join(OUTPUT_FOLDER, processed_filename)
+    segmented_path = os.path.join(OUTPUT_FOLDER, segmented_filename)
+    
     cv2.imwrite(processed_path, processed_view)
     cv2.imwrite(segmented_path, segmented_color)
+    
+    print("Saved processed image at:", processed_path)
+    print("Saved segmented image at:", segmented_path)
 
     return jsonify({
         'best_k': int(best_k),
-        'processed_url': '/outputs/processed.png',
-        'segmented_url': '/outputs/segmented.png',
+        'processed_url': f'/static/outputs/{processed_filename}',
+        'segmented_url': f'/static/outputs/{segmented_filename}',
         'cluster_info': cluster_info
     })
-
-@app.route('/outputs/<filename>')
-def output_file(filename):
-    return send_from_directory(OUTPUT_FOLDER, filename)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+    print("Starting Flask on port:", port)
