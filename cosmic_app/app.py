@@ -6,16 +6,18 @@ import time
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
-os.makedirs("uploads", exist_ok=True)
+os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads"), exist_ok=True)
 # Outputs will now be in static/outputs
-OUTPUT_FOLDER = os.path.join('static', 'outputs')
-os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'outputs'), exist_ok=True)
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'uploads'
-# Redundant definition removed or updated to match above
-OUTPUT_FOLDER = os.path.join('static', 'outputs')
+# Ensure paths are absolute and relative to this script file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# If static folder is not adjacent to app.py, Flask configuration might need tweaks.
+# But assuming standard struct: cosmic_app/static/outputs
+OUTPUT_FOLDER = os.path.join(BASE_DIR, 'static', 'outputs')
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
