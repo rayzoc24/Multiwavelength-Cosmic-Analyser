@@ -409,7 +409,9 @@ function processImage() {
     .then(res => res.json())
     .then(data => {
         console.log('Process response:', data);
-        const cacheBust = '?' + new Date().getTime();
+        const cacheBust = "?t=" + new Date().getTime();
+        
+        // Update image sources with cache busting
         if (data.processed_url) {
             processedPreview.src = data.processed_url + cacheBust;
         }
