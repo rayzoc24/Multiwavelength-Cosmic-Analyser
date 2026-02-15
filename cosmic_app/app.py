@@ -140,7 +140,7 @@ def process_image():
     # Determine best K using silhouette score unless user overrides it.
     best_k = 3
     if pixels.shape[0] >= 50:
-        k_min, k_max = 3, 4
+        k_min, k_max = 2, 10
         if user_clusters is None:
             best_score = -1.0
             sample_size = min(2000, pixels.shape[0])

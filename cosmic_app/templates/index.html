@@ -62,7 +62,7 @@
                         <option value="xray">X-ray</option>
                     </select>
                     <label for="clusters">Number of Clusters (K): <span id="clusterValue">3</span></label>
-                    <input type="range" id="clusters" value="3" min="3" max="4" step="1">
+                    <input type="range" id="clusters" value="3" min="2" max="10" step="1">
                     <div style="width: 100%; margin-top: 8px;">
                         <label class="file-upload-label" for="imageInput">
                             <span class="file-upload-icon">📁</span>
@@ -70,7 +70,7 @@
                         </label>
                         <input type="file" id="imageInput" accept="image/*" onchange="previewUploadedImage()" style="display: none;">
                     </div>
-                    <span class="hint">💡 Recommended clusters: <span id="suggestedK">3-4</span></span>
+                    <span class="hint">💡 Recommended clusters: <span id="suggestedK">2-10</span></span>
                     <button class="btn" onclick="processImage()">🚀 Process Image</button>
                     <div class="loading-indicator" aria-hidden="true">
                         <span class="spinner"></span>
