@@ -2,5 +2,5 @@ flask
 opencv-python
 numpy
 scikit-learn
-matpotlib
+matplotlib
 pillow
